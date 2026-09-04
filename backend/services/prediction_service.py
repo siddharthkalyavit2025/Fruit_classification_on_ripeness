@@ -19,20 +19,39 @@ from database.models import save_prediction, update_sorting_status
 logger = logging.getLogger(__name__)
 
 
-def process_prediction(image_bytes: bytes) -> dict:
+def execute_sorting_task(prediction_id: int, target_angle: int):
+    """
+    Executes servo hardware movement in the background so that
+    the AI prediction result renders on the frontend screen immediately.
+    """
+    logger.info(f"[SORTING TASK] Starting background servo movement for prediction #{prediction_id} (target: {target_angle}°)")
+    update_sorting_status(prediction_id, "COMMAND_SENT")
+
+    arduino_result = serial_service.send_angle(
+        angle=target_angle,
+        prediction_id=prediction_id,
+    )
+
+    sorting_status = arduino_result.get("sorting_status", "FAILED")
+    update_sorting_status(prediction_id, sorting_status)
+    logger.info(f"[SORTING TASK] Finished background sorting for prediction #{prediction_id} with status: {sorting_status}")
+
+
+def process_prediction(image_bytes: bytes, background_tasks=None) -> dict:
     """
     Full prediction pipeline:
         1. Run AI inference
         2. Determine sorting action
         3. Save to database
-        4. Send command to Arduino
-        5. Return complete result
+        4. Queue background servo movement
+        5. Return complete result immediately to frontend
 
     Args:
         image_bytes: Raw image bytes from the uploaded file
+        background_tasks: FastAPI BackgroundTasks instance
 
     Returns:
-        Complete prediction result with sorting info.
+        Complete prediction result for immediate UI rendering.
     """
     # ----- Step 1: AI Inference -----
     prediction = predict_image(image_bytes)
@@ -57,18 +76,20 @@ def process_prediction(image_bytes: bytes) -> dict:
 
     prediction_id = save_prediction(db_data)
 
-    # ----- Step 4: Send to Arduino (Execute 0° ➔ Target ➔ 0° Cycle) -----
-    arduino_result = serial_service.send_angle(
-        angle=sorting["servo_angle"],
-        prediction_id=prediction_id,
-    )
+    # ----- Step 4: Trigger Servo Movement (Background Task) -----
+    if background_tasks:
+        background_tasks.add_task(execute_sorting_task, prediction_id, sorting["servo_angle"])
+        sorting_status = "COMMAND_SENT"
+    else:
+        # Fallback synchronous execution if background_tasks not passed
+        arduino_result = serial_service.send_angle(
+            angle=sorting["servo_angle"],
+            prediction_id=prediction_id,
+        )
+        sorting_status = arduino_result.get("sorting_status", "FAILED")
+        update_sorting_status(prediction_id, sorting_status)
 
-    sorting_status = arduino_result.get("sorting_status", "FAILED")
-
-    # Update DB with actual sorting completion status
-    update_sorting_status(prediction_id, sorting_status)
-
-    # ----- Step 5: Return Complete Result -----
+    # ----- Step 5: Return Complete Result Immediately to Frontend -----
     return {
         "success": True,
         "prediction_id": prediction_id,
@@ -84,7 +105,5 @@ def process_prediction(image_bytes: bytes) -> dict:
         "sorting_status": sorting_status,
         "current_servo_angle": serial_service.current_servo_angle,
         "arduino_status": "CONNECTED" if serial_service.is_connected else "DISCONNECTED",
-        "arduino_response": arduino_result.get("response", ""),
-        "error": arduino_result.get("error"),
         "all_probabilities": prediction.get("all_probabilities", {}),
     }

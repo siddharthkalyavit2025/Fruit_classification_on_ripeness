@@ -28,7 +28,7 @@ import sys
 import os
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi import FastAPI, UploadFile, File, HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 
 # Add backend dir to path so imports work
@@ -129,16 +129,16 @@ app.add_middleware(
 # ==============================================================
 
 @app.post("/predict", response_model=PredictionResponse)
-async def predict(file: UploadFile = File(...)):
+async def predict(background_tasks: BackgroundTasks, file: UploadFile = File(...)):
     """
     Upload a fruit image for AI classification and sorting.
 
     1. Receives image file
     2. Runs EfficientNetV2-S inference
-    3. Determines sorting destination
-    4. Saves to database
-    5. Sends command to Arduino
-    6. Returns complete result
+    3. Determines sorting destination & angle
+    4. Saves prediction to database
+    5. Returns prediction result IMMEDIATELY to frontend UI
+    6. Triggers servo hardware movement in background task
     """
     # Validate file
     if not file.content_type or not file.content_type.startswith("image/"):
@@ -154,8 +154,8 @@ async def predict(file: UploadFile = File(...)):
 
     logger.info(f"Received image: {file.filename} ({len(image_bytes)} bytes)")
 
-    # Run full prediction pipeline
-    result = process_prediction(image_bytes)
+    # Run prediction pipeline (returns result immediately to UI, servo runs in background)
+    result = process_prediction(image_bytes, background_tasks=background_tasks)
 
     if not result["success"]:
         raise HTTPException(status_code=500, detail=result.get("error", "Prediction failed"))
