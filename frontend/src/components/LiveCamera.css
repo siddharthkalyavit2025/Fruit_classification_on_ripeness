@@ -1,0 +1,140 @@
+.camera-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.card-header-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.card-header-flex .card-title {
+  margin-bottom: 0;
+}
+
+.video-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #060911;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.video-element {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: none;
+}
+
+.video-element.active {
+  display: block;
+}
+
+.uploaded-preview-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.video-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 1.5rem;
+}
+
+.cam-icon {
+  font-size: 2.5rem;
+  opacity: 0.5;
+}
+
+.camera-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.viewfinder-box {
+  width: 60%;
+  height: 60%;
+  position: relative;
+  border: 1px dashed rgba(0, 212, 170, 0.3);
+  box-shadow: 0 0 20px rgba(0, 212, 170, 0.05);
+}
+
+.corner {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-color: var(--cyan);
+  border-style: solid;
+}
+
+.top-left { top: -2px; left: -2px; border-width: 2px 0 0 2px; }
+.top-right { top: -2px; right: -2px; border-width: 2px 2px 0 0; }
+.bottom-left { bottom: -2px; left: -2px; border-width: 0 0 2px 2px; }
+.bottom-right { bottom: -2px; right: -2px; border-width: 0 2px 2px 0; }
+
+.scan-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+  opacity: 0;
+}
+
+.scan-line.scanning {
+  opacity: 1;
+  animation: scan 1.8s ease-in-out infinite alternate;
+}
+
+@keyframes scan {
+  from { top: 5%; }
+  to { top: 95%; }
+}
+
+.camera-controls {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.capture-btn {
+  flex: 1;
+  background: linear-gradient(135deg, #00d4aa 0%, #00a884 100%);
+  color: #060911;
+  font-size: 0.95rem;
+  letter-spacing: 0.3px;
+}
+
+.spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(10, 14, 26, 0.3);
+  border-top-color: #0a0e1a;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

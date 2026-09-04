@@ -1,0 +1,48 @@
+.system-status-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.status-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.status-row-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1rem;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  transition: background 0.2s ease;
+}
+
+.status-row-item:hover {
+  background: var(--bg-card-hover);
+}
+
+.status-info {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.status-name-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.status-item-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-white);
+}
+
+.status-item-details {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}

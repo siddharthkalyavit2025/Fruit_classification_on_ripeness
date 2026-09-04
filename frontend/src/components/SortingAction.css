@@ -1,0 +1,120 @@
+.sorting-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.sorting-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  min-height: 220px;
+  gap: 0.75rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.sorting-empty-icon {
+  font-size: 3rem;
+  opacity: 0.4;
+}
+
+.sorting-details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.sort-info-box {
+  background: var(--bg-secondary);
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.info-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-white);
+}
+
+.highlight-text {
+  color: var(--orange);
+}
+
+.servo-gauge-wrapper {
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  padding: 1.25rem 1rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.gauge-outer {
+  position: relative;
+  width: 160px;
+  height: 80px;
+  border-top-left-radius: 90px;
+  border-top-right-radius: 90px;
+  background: var(--bg-input);
+  border: 2px solid var(--border-color);
+  border-bottom: none;
+  overflow: visible;
+  margin-bottom: 0.5rem;
+}
+
+.gauge-ticks {
+  position: absolute;
+  inset: 0;
+}
+
+.tick-label {
+  position: absolute;
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+.label-0 { bottom: -18px; left: -5px; }
+.label-90 { top: -20px; left: 50%; transform: translateX(-50%); }
+.label-180 { bottom: -18px; right: -10px; }
+
+.gauge-needle {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 4px;
+  height: 68px;
+  background: linear-gradient(to top, var(--orange), var(--yellow));
+  transform-origin: bottom center;
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border-radius: 2px;
+  margin-left: -2px;
+  box-shadow: 0 0 10px rgba(255, 152, 0, 0.5);
+}
+
+.gauge-center-cap {
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--text-white);
+  transform: translateX(-50%);
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+  z-index: 2;
+}
+
+.command-display {
+  margin-top: 1rem;
+  font-size: 0.75rem;
+}

@@ -1,0 +1,62 @@
+/* App Layout CSS */
+.app-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--bg-primary);
+}
+
+.main-viewport {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  margin-left: 200px;
+  overflow-x: hidden;
+}
+
+.dashboard-content {
+  flex: 1;
+  padding: 1.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.dashboard-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.grid-3-cols {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.grid-2-cols {
+  grid-template-columns: 1fr 1fr;
+}
+
+.dashboard-row {
+  width: 100%;
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 1280px) {
+  .grid-3-cols {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .app-container {
+    flex-direction: column;
+  }
+
+  .grid-3-cols,
+  .grid-2-cols {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-content {
+    padding: 1rem;
+  }
+}

@@ -1,0 +1,58 @@
+.main-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 2rem;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.header-title-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.header-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-white);
+  letter-spacing: -0.5px;
+}
+
+.header-subtitle {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.arduino-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.arduino-badge.connected {
+  border-color: rgba(0, 200, 83, 0.4);
+  box-shadow: 0 0 12px rgba(0, 200, 83, 0.1);
+}
+
+.arduino-badge.disconnected {
+  border-color: rgba(239, 68, 68, 0.4);
+}
+
+.arduino-badge:hover {
+  transform: translateY(-1px);
+  background: var(--bg-card-hover);
+}
+
+.badge-text {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}

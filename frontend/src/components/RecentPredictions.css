@@ -1,0 +1,50 @@
+.recent-predictions-card {
+  width: 100%;
+}
+
+.predictions-empty {
+  padding: 2.5rem 1rem;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--border-color);
+}
+
+.fruit-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.table-emoji {
+  font-size: 1.25rem;
+}
+
+.table-fruit-name {
+  font-weight: 600;
+  color: var(--text-white);
+}
+
+.confidence-cell {
+  color: var(--cyan);
+  font-weight: 600;
+}
+
+.delete-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  transition: all 0.2s ease;
+  opacity: 0.7;
+}
+
+.delete-btn:hover {
+  opacity: 1;
+  background: rgba(239, 68, 68, 0.15);
+  transform: scale(1.15);
+}
