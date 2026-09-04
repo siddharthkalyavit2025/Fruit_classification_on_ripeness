@@ -23,7 +23,9 @@ class PredictionResponse(BaseModel):
     class_index: Optional[int] = None
     destination: Optional[str] = None
     servo_angle: Optional[int] = None
+    current_servo_angle: Optional[int] = 0
     arduino_command: Optional[str] = None
+    arduino_status: Optional[str] = None
     sorting_status: Optional[str] = None
     arduino_response: Optional[str] = None
     all_probabilities: Optional[dict] = None
@@ -50,6 +52,7 @@ class StatusResponse(BaseModel):
     arduino: str = "unknown"
     servo: str = "unknown"
     serial_port: Optional[str] = None
+    current_servo_angle: Optional[int] = 0
     available_ports: Optional[list] = None
 
 

@@ -204,6 +204,7 @@ async def get_status():
         "arduino": arduino_status,
         "servo": servo_status,
         "serial_port": SERIAL_PORT,
+        "current_servo_angle": serial_service.current_servo_angle,
         "available_ports": serial_service.list_ports(),
     }
 
@@ -272,16 +273,32 @@ async def serial_ports():
 
 
 @app.post("/serial/test")
-async def serial_test(angle: int = 90):
+@app.post("/hardware/servo/test")
+async def servo_test(payload: dict | None = None, angle: int | None = None):
     """
-    Send a test angle to Arduino (for safe testing).
-    Default is 90° (center position).
-    """
-    if not (0 <= angle <= 180):
-        raise HTTPException(status_code=400, detail="Angle must be 0-180")
+    Send a test angle to Arduino to execute the full sorting cycle:
+      0° ➔ target_angle ➔ 0° (home return)
 
-    result = serial_service.send_angle(angle)
+    Accepts body `{"angle": 30}` or query param `?angle=30`.
+    """
+    target = angle
+    if payload and "angle" in payload:
+        target = payload["angle"]
+
+    if target is None:
+        target = 90
+
+    if not (0 <= target <= 180):
+        raise HTTPException(status_code=400, detail="Angle must be between 0 and 180 degrees.")
+
+    result = serial_service.send_angle(target)
     return result
+
+
+@app.get("/hardware/status")
+async def get_hardware_status():
+    """Get structured hardware status for Arduino and Servo."""
+    return serial_service.get_hardware_status()
 
 
 # ---- Health Check ----

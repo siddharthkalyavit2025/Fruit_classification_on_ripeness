@@ -57,20 +57,15 @@ def process_prediction(image_bytes: bytes) -> dict:
 
     prediction_id = save_prediction(db_data)
 
-    # ----- Step 4: Send to Arduino -----
+    # ----- Step 4: Send to Arduino (Execute 0° ➔ Target ➔ 0° Cycle) -----
     arduino_result = serial_service.send_angle(
         angle=sorting["servo_angle"],
         prediction_id=prediction_id,
     )
 
-    # Update sorting status based on Arduino response
-    if arduino_result["success"]:
-        sorting_status = "SORTED"
-    elif not serial_service.is_connected:
-        sorting_status = "SIMULATED"
-    else:
-        sorting_status = "ARDUINO_ERROR"
+    sorting_status = arduino_result.get("sorting_status", "FAILED")
 
+    # Update DB with actual sorting completion status
     update_sorting_status(prediction_id, sorting_status)
 
     # ----- Step 5: Return Complete Result -----
@@ -87,6 +82,9 @@ def process_prediction(image_bytes: bytes) -> dict:
         "servo_angle": sorting["servo_angle"],
         "arduino_command": sorting["arduino_command"],
         "sorting_status": sorting_status,
+        "current_servo_angle": serial_service.current_servo_angle,
+        "arduino_status": "CONNECTED" if serial_service.is_connected else "DISCONNECTED",
         "arduino_response": arduino_result.get("response", ""),
+        "error": arduino_result.get("error"),
         "all_probabilities": prediction.get("all_probabilities", {}),
     }
