@@ -78,7 +78,7 @@ SORTING_MAP = {
 # ----------------------------------------------------------
 SERIAL_PORT = os.environ.get("SERIAL_PORT", "COM6")
 SERIAL_BAUD_RATE = 9600
-SERIAL_TIMEOUT = 2          # seconds to wait for Arduino response
+SERIAL_TIMEOUT = 5          # seconds to wait for Arduino sorting cycle response
 SERIAL_ENABLED = True       # set False to run without Arduino
 
 # ----------------------------------------------------------

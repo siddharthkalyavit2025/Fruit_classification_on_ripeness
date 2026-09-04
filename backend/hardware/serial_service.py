@@ -198,7 +198,7 @@ class SerialService:
                 target_moved = False
                 start_time = time.time()
 
-                while (time.time() - start_time) < 2.0:
+                while (time.time() - start_time) < SERIAL_TIMEOUT:
                     if self._serial.in_waiting > 0:
                         line = self._serial.readline().decode("utf-8", errors="ignore").strip()
                         if line:
@@ -222,7 +222,7 @@ class SerialService:
                     
                     # Read home movement confirmation
                     home_start = time.time()
-                    while (time.time() - home_start) < 2.0:
+                    while (time.time() - home_start) < SERIAL_TIMEOUT:
                         if self._serial.in_waiting > 0:
                             line = self._serial.readline().decode("utf-8", errors="ignore").strip()
                             if line:
