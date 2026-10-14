@@ -36,6 +36,11 @@ export default function App() {
   const [statusData, setStatusData] = useState(null);
   const [statsData, setStatsData] = useState(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [cameraStatus, setCameraStatus] = useState({
+    active: false,
+    label: 'Camera Inactive (Off)',
+    error: null,
+  });
 
   // Fetch system status
   const fetchStatus = useCallback(async () => {
@@ -132,6 +137,7 @@ export default function App() {
             <LiveCamera
               onAnalyze={handleAnalyzeFrame}
               isAnalyzing={isAnalyzing}
+              onCameraStatusChange={setCameraStatus}
             />
             <AIPrediction
               prediction={latestPrediction}
@@ -142,7 +148,10 @@ export default function App() {
 
           {/* Middle Row: System Status, Statistics */}
           <div className="dashboard-grid grid-2-cols">
-            <SystemStatus statusData={statusData} />
+            <SystemStatus
+              statusData={statusData}
+              cameraStatus={cameraStatus}
+            />
             <Statistics stats={statsData} />
           </div>
 

@@ -312,3 +312,9 @@ async def root():
         "model_status": get_model_status(),
         "arduino_status": serial_service.status,
     }
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=False)
+

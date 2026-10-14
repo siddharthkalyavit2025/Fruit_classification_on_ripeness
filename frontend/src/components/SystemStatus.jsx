@@ -10,14 +10,22 @@
 
 import './SystemStatus.css';
 
-export default function SystemStatus({ statusData }) {
+export default function SystemStatus({ statusData, cameraStatus }) {
+  const isCamActive = !!cameraStatus?.active;
+  const camError = cameraStatus?.error;
+  const camDetails = camError
+    ? camError
+    : isCamActive
+    ? cameraStatus?.label || 'Active (Camera)'
+    : 'Camera Inactive (Off)';
+
   const statusItems = [
     {
       id: 'camera',
       name: 'Camera',
-      details: statusData?.camera || 'Active (Browser Webcam)',
-      active: true,
-      badge: 'ONLINE',
+      details: camDetails,
+      active: isCamActive,
+      badge: camError ? 'ERROR' : isCamActive ? 'ONLINE' : 'OFFLINE',
     },
     {
       id: 'model',

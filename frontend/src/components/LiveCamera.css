@@ -15,7 +15,106 @@
   margin-bottom: 0;
 }
 
+/* ---- Camera Device Selector Bar ---- */
+.camera-select-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 0.35rem 0.65rem;
+  font-size: 0.825rem;
+}
+
+.camera-select-label {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.cam-select-icon {
+  font-size: 0.95rem;
+}
+
+.camera-dropdown {
+  flex: 1;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 0.35rem 0.5rem;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  outline: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 0;
+  text-overflow: ellipsis;
+}
+
+.camera-dropdown:focus {
+  border-color: var(--cyan);
+  box-shadow: 0 0 8px var(--cyan-dim);
+}
+
+.camera-dropdown:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.camera-dropdown option {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  padding: 0.4rem;
+}
+
+.btn-refresh-devices {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  border-radius: var(--radius-sm);
+  padding: 0.3rem 0.45rem;
+  cursor: pointer;
+  font-size: 0.825rem;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.btn-refresh-devices:hover:not(:disabled) {
+  border-color: var(--cyan);
+  color: var(--cyan);
+  box-shadow: 0 0 6px var(--cyan-dim);
+}
+
+.btn-refresh-devices:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.placeholder-text {
+  max-width: 85%;
+  line-height: 1.4;
+}
+
+.placeholder-subtext {
+  font-size: 0.75rem;
+  color: var(--cyan);
+  max-width: 85%;
+  margin-top: -0.25rem;
+  line-height: 1.35;
+}
+
 .video-wrapper {
+
   position: relative;
   width: 100%;
   aspect-ratio: 16 / 9;
