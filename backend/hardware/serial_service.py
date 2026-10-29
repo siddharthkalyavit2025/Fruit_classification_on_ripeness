@@ -20,7 +20,7 @@ import threading
 import time
 import serial
 import serial.tools.list_ports
-from config import SERIAL_PORT, SERIAL_BAUD_RATE, SERIAL_TIMEOUT, SERIAL_ENABLED
+from config import SERIAL_PORT, SERIAL_BAUD_RATE, SERIAL_TIMEOUT, SERIAL_ENABLED, SERVO_HOME_ANGLE
 
 logger = logging.getLogger(__name__)
 
@@ -204,20 +204,20 @@ class SerialService:
                         if line:
                             logger.info(f"[ARDUINO] Received: {line}")
                             responses.append(line)
-                            if "SERVO_HOME:0" in line:
+                            if f"SERVO_HOME:{SERVO_HOME_ANGLE}" in line:
                                 servo_home_received = True
-                                self._current_servo_angle = 0
+                                self._current_servo_angle = SERVO_HOME_ANGLE
                                 break
                             elif line.startswith("SERVO_MOVED:") or line.startswith("OK:"):
                                 target_moved = True
                     else:
                         time.sleep(0.1)
 
-                # If physical Arduino sketch doesn't auto-return to 0°, send explicit 0° home command from backend
+                # If physical Arduino sketch doesn't auto-return to home, send explicit home command from backend
                 if target_moved and not servo_home_received:
-                    logger.info(f"[SORTING] Fruit sorting dwell time complete. Sending explicit Home return command (0°)...")
+                    logger.info(f"[SORTING] Fruit sorting dwell time complete. Sending explicit Home return command ({SERVO_HOME_ANGLE}°)...")
                     time.sleep(1.0) # Dwell time for fruit to drop into bin
-                    home_cmd = "0\n"
+                    home_cmd = f"{SERVO_HOME_ANGLE}\n"
                     self._serial.write(home_cmd.encode("utf-8"))
                     
                     # Read home movement confirmation
@@ -228,9 +228,9 @@ class SerialService:
                             if line:
                                 logger.info(f"[ARDUINO] Home return response: {line}")
                                 responses.append(line)
-                                if "SERVO_MOVED:0" in line or "SERVO_HOME:0" in line or line.startswith("OK:"):
+                                if f"SERVO_MOVED:{SERVO_HOME_ANGLE}" in line or f"SERVO_HOME:{SERVO_HOME_ANGLE}" in line or line.startswith("OK:"):
                                     servo_home_received = True
-                                    self._current_servo_angle = 0
+                                    self._current_servo_angle = SERVO_HOME_ANGLE
                                     break
                         else:
                             time.sleep(0.1)

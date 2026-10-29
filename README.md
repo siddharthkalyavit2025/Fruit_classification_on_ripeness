@@ -7,28 +7,32 @@ Using **Deep Learning (EfficientNetV2-S)** and real-time computer vision, this p
 
 ## 🌟 Key Features
 
-- **🧠 Deep Learning Engine**: Powered by `EfficientNetV2-S` fine-tuned on fruit ripeness datasets.
-- **📸 Real-Time Computer Vision Feed**: Live webcam stream with one-click frame capture and image file upload options.
-- **🤖 Automated Servo Motor Sorting**: Direct USB Serial communication (COM port) actuating an Arduino-driven servo motor (0° to 180°) based on classification results.
-- **🎨 Glassmorphic Responsive Dashboard**: Built with React & Vite, styled in modern dark mode featuring fruit logos, live status indicators, angle gauges, and metrics.
-- **📊 Real-Time Analytics & Stats**: SQLite-backed predictions database tracking overall detection counts, high-confidence ratios, sorting success rates, and distribution per fruit.
-- **🔄 Live Serial Reconnection**: Header connection badge allows instant connection/disconnection toggling with auto-port detection (`COM6`).
+- **🧠 Deep Learning Engine**: Powered by `EfficientNetV2-S` fine-tuned on fruit ripeness datasets across 9 classes (Fresh/Unripe/Rotten for Apple, Banana, and Orange).
+- **📸 Multi-Camera & iVCam Auto-Detection**: Live webcam stream supporting device switching, auto-detection for iVCam (phone as webcam), frame capture, and image upload.
+- **⚡ Non-Blocking Background Sorting**: Uses FastAPI `BackgroundTasks` so AI inference, class confidence scores, and metrics render immediately on the UI without waiting for servo actuation.
+- **🤖 Automated Servo Motor Sorting**: Direct USB Serial communication (`COM6` / `9600` Baud) with Arduino UNO actuating a 3-way servo mechanism (Center 90°, Left 30°, Right 150°).
+- **🎨 Glassmorphic Responsive Dashboard**: Modern dark-mode UI built with React & Vite, featuring live video streams, angle gauges, fruit icons, and hardware connection toggles.
+- **📊 Real-Time Analytics & Stats**: SQLite-backed predictions tracking total counts, high-confidence ratios, sorting success rates, and distribution per fruit.
+- **🔄 Live Serial Reconnection & Diagnostics**: Header connection badge with one-click connect/disconnect, automatic COM port scanning, hardware health checks, and manual angle testing.
 
 ---
 
-## 📐 Servo Angles & Ripeness Classification Protocol
+## 📐 Ripeness Classification & Servo Sorting Protocol
 
-| Fruit Class | Condition | Emoji | Bin Destination | Target Servo Angle |
-| :--- | :--- | :---: | :--- | :---: |
-| **`freshapples`** | Fresh / Ripe | 🍎 | Fresh Apple Bin | **30°** |
-| **`unripe apple`** | Unripe | 🍏 | Unripe Apple Bin | **45°** |
-| **`rottenapples`** | Rotten | 🍎 | Rotten Apple Bin | **60°** |
-| **`freshbanana`** | Fresh / Ripe | 🍌 | Fresh Banana Bin | **90°** |
-| **`unripe banana`** | Unripe | 🍌 | Unripe Banana Bin | **105°** |
-| **`rottenbanana`** | Rotten | 🍌 | Rotten Banana Bin | **120°** |
-| **`freshoranges`** | Fresh / Ripe | 🍊 | Fresh Orange Bin | **150°** |
-| **`unripe orange`** | Unripe | 🍊 | Unripe Orange Bin | **165°** |
-| **`rottenoranges`** | Rotten | 🍊 | Rotten Orange Bin | **180°** |
+The AI model classifies images into **9 distinct categories**:
+- **Apples**: `freshapples`, `unripe apple`, `rottenapples`
+- **Bananas**: `freshbanana`, `unripe banana`, `rottenbanana`
+- **Oranges**: `freshoranges`, `unripe orange`, `rottenoranges`
+
+Physical sorting is routed into 3 primary destinations based on the fruit's **ripeness condition**:
+
+| Condition | Bin Destination | Emoji | Servo Position | Target Angle | Hardware Sorting Cycle |
+| :--- | :--- | :---: | :---: | :---: | :--- |
+| **Fresh / Ripe** | **Ripe Bin** | 🍎🍌🍊 | 60° Left of Center | **30°** | 0.5s delay ➔ Rotate to 30° ➔ 0.7s hold for fruit drop ➔ Return to 90° Home |
+| **Unripe** | **Unripe Bin** | 🍏🍌🍊 | Center / Neutral | **90°** | Motor stays stationary at 90° Home (no actuation needed) |
+| **Rotten** | **Reject Bin** | 🥀 | 60° Right of Center | **150°** | 0.5s delay ➔ Rotate to 150° ➔ 0.7s hold for fruit drop ➔ Return to 90° Home |
+
+> **Note**: Angles and timing parameters can be adjusted in [`backend/config.py`](backend/config.py) (`SORTING_MAP`, `SERVO_HOME_ANGLE`) and [`arduino/fruit_sorter.ino`](arduino/fruit_sorter.ino).
 
 ---
 
@@ -37,19 +41,22 @@ Using **Deep Learning (EfficientNetV2-S)** and real-time computer vision, this p
 ### **Frontend**
 - **Framework**: React 18 + Vite
 - **Styling**: Vanilla CSS (CSS Grid, Glassmorphic Glass Design, Custom Color System)
+- **Camera Handling**: MediaDevices API with dynamic camera enumeration and iVCam auto-selection
 - **Icons & Visualization**: Lucide React Icons, Custom SVG Fruit Assets
 
 ### **Backend**
-- **Framework**: FastAPI (Python 3.10)
+- **Framework**: FastAPI (Python 3.10+) with non-blocking `BackgroundTasks`
 - **ML Framework**: TensorFlow 2.16+ / Keras
 - **Model**: EfficientNetV2-S (weights included in repository)
 - **Database**: SQLite (`predictions.db`)
-- **Hardware Integration**: `pyserial` for USB Serial Communication
+- **System Monitoring**: `psutil` (CPU and RAM telemetry)
+- **Hardware Integration**: `pyserial` for bidirectional USB Serial Communication
 
 ### **Hardware**
 - **Microcontroller**: Arduino UNO
 - **Actuator**: SG90 / MG996R Servo Motor (PWM Pin 9)
 - **Interface**: USB Serial (`COM6` / `9600` Baud)
+- **Default Position**: 90° (Neutral / Home)
 
 ---
 
@@ -58,7 +65,7 @@ Using **Deep Learning (EfficientNetV2-S)** and real-time computer vision, this p
 ```
 Fruit_classification_on_ripeness/
 ├── arduino/
-│   └── fruit_sorter.ino          # Arduino C++ sketch for servo motor actuation
+│   └── fruit_sorter.ino          # Arduino C++ sketch for servo motor actuation (90° Home)
 ├── backend/
 │   ├── database/                 # SQLite database connection & schema initialization
 │   ├── hardware/                 # Serial communication service & sorting angle manager
@@ -143,23 +150,29 @@ Open your browser and navigate to `http://localhost:3000`.
    - **Signal Line (Yellow/Orange)** ➔ Arduino **Digital Pin 9**
    - **VCC (Red)** ➔ Arduino **5V**
    - **GND (Black/Brown)** ➔ Arduino **GND**
-3. Open `arduino/fruit_sorter.ino` in Arduino IDE.
+3. Open `arduino/fruit_sorter.ino` in the Arduino IDE.
 4. Select board **Arduino Uno** and your COM port (`COM6`).
 5. Click **Upload**.
+6. When power is applied, the servo will automatically align to **90° (Home)** and transmit `ARDUINO_READY`.
 
 ---
 
 ## 🔌 API Endpoints Summary
 
-- `GET /status` — System health, model readiness, and serial port details.
-- `POST /predict/file` — Upload image file for inference, database logging, and automated servo actuation.
-- `POST /predict/base64` — Send base64 image frame from webcam feed for inference.
-- `POST /serial/connect?port=COM6` — Connect or switch Arduino USB serial port.
-- `POST /serial/disconnect` — Safely disconnect Arduino serial communication.
-- `POST /serial/test?angle=90` — Manually test servo motor angle.
-- `GET /stats` — Retrieve overall fruit counts, accuracy statistics, and distribution.
-- `GET /predictions` — Fetch recent prediction history.
-- `DELETE /predictions/{id}` — Delete a prediction record.
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `GET` | `/` | Health check & system component readiness probe |
+| `POST` | `/predict` | Upload image file (`multipart/form-data`) for AI inference, DB record, and background servo actuation |
+| `GET` | `/predictions?limit=20` | Fetch recent prediction history |
+| `DELETE` | `/predictions/{id}` | Delete a prediction record from database |
+| `GET` | `/stats` | Retrieve overall fruit counts, accuracy ratios, and condition distribution |
+| `GET` | `/status` | System health, model readiness, and serial port details |
+| `GET` | `/system-info` | Real-time CPU, RAM, and GPU telemetry for the dashboard |
+| `GET` | `/hardware/status` | Structured Arduino connection and servo position status |
+| `GET` | `/serial/ports` | List all available COM ports on the system |
+| `POST` | `/serial/connect?port=COM6` | Connect or switch Arduino USB serial port |
+| `POST` | `/serial/disconnect` | Safely disconnect Arduino serial communication |
+| `POST` | `/serial/test?angle=90` | Send test angle to verify servo movement and home return cycle |
 
 ---
 

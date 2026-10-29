@@ -55,21 +55,25 @@ CLASS_INFO = {
 # ----------------------------------------------------------
 # Sorting Map — condition → destination + servo angle
 # ----------------------------------------------------------
-# Servo angles are CONFIGURABLE. Change them here after
-# assembling the physical sorting mechanism.
+# Home/center position: 90°
+# Unripe  →  90° : motor stays at center (no movement)
+# Ripe    →  30° : 60° to the LEFT  from center (90° - 60°)
+# Rotten  → 150° : 60° to the RIGHT from center (90° + 60°)
 # ----------------------------------------------------------
+SERVO_HOME_ANGLE = 90
+
 SORTING_MAP = {
     "Fresh/Ripe": {
         "destination": "Ripe Bin",
-        "servo_angle": 120,
+        "servo_angle": 30,    # 60° left from center
     },
     "Rotten": {
         "destination": "Reject Bin",
-        "servo_angle": 60,
+        "servo_angle": 150,   # 60° right from center
     },
     "Unripe": {
         "destination": "Unripe Bin",
-        "servo_angle": 30,
+        "servo_angle": 90,    # No movement — stays at home
     },
 }
 
